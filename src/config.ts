@@ -12,3 +12,5 @@ export const env = createEnv({
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });
+
+export const GITHUB_URL = "https://github.com/bruisedpayne/rip-ott";

@@ -2,7 +2,9 @@ import { Bot } from 'grammy';
 import axios from 'axios';
 import { addMagnetLink, addTorrentFile, unrestrictLink, getTorrentInfo, selectFiles } from './api.js';
 import { isMagnetLink, formatTorrentStatus, formatBytes } from './util.js';
-import { env } from './env.js';
+import { env } from './config.js';
+import { startMessage } from './messages/start.js';
+import { helpMessage } from './messages/help.js';
 
 export function setupBotHandlers(bot: Bot) {
   async function handleTorrentPostProcessing(torrentId: string, ctx: any) {
@@ -18,56 +20,10 @@ export function setupBotHandlers(bot: Bot) {
   }
 
   bot.command('start', async (ctx) => {
-    const welcomeMessage = `🎉 *Welcome to RIP OTT!*
-
-I help you download torrents and get fast HTTPS download links.
-
-*Quick Start:*
-1. Upload a torrent file or use \`/torrent <magnet_link>\`
-2. Check download status with \`/status <torrent_id>\`
-3. Get download links with \`/download <link>\`
-
-Use \`/help\` for detailed instructions.`;
-
-    await ctx.reply(welcomeMessage, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } });
+    await ctx.reply(startMessage, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } });
   });
 
   bot.command('help', async (ctx) => {
-    const helpMessage = `📖 *RIP OTT Help*
-
-*How to use this bot:*
-
-🔹 **Step 1: Add a torrent**
-• Upload a torrent file directly
-• Or use: \`/torrent <magnet_link>\`
-• Example: \`/torrent magnet:?xt=urn:btih:...\`
-
-🔹 **Step 2: Check download status**
-• Use: \`/status <torrent_id>\`
-• Example: \`/status 123456789\`
-• Status shows: downloading, completed, etc.
-
-🔹 **Step 3: Download files**
-• Once status shows "downloaded"
-• You'll get individual file links
-• Use: \`/download <file_link>\`
-• Get fast HTTPS download links
-
-*Available Commands:*
-• \`/start\` - Welcome message
-• \`/help\` - Show this help
-• \`/torrent <magnet>\` - Add magnet link
-• \`/status <id>\` - Check torrent status
-• \`/download <link>\` - Get download link
-
-*Tips:*
-• Torrent files must be \`.torrent\` format
-• Magnet links must start with "magnet:"
-• Download links expire after some time
-• Large files may take time to process
-
-Need help? Use \`/help\` anytime!`;
-
     await ctx.reply(helpMessage, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } });
   });
 

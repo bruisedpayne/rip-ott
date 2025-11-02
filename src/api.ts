@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { env } from './env.js';
+import { env } from './config.js';
 
 const RD_API_BASE = 'https://api.real-debrid.com/rest/1.0';
 
