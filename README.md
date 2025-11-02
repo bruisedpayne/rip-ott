@@ -1,4 +1,4 @@
-# Real Debrid Telegram Bot
+# RIP OTT
 
 Telegram bot that integrates with Real-Debrid API to get fast HTTPS links from torrents
 
