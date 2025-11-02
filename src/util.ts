@@ -20,7 +20,6 @@ export function formatTorrentStatus(torrent: any): string {
   message += `*Size:* ${formatBytes(torrent.original_bytes)}\n\n`;
   message += `*Status:* ${torrent.status.replaceAll("_", " ")}\n\n`;
   message += `*Progress:* ${torrent.progress}%\n\n`;
-  message += `*Added:* ${formatDate(torrent.added)}\n\n`;
   
   if (torrent.links && torrent.links.length > 0) {
     message += `*Links:*\n`;
