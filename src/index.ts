@@ -165,7 +165,7 @@ bot.command('status', async (ctx) => {
     await ctx.reply('Fetching torrent status...');
     const torrent = await getTorrentInfo(torrentId);
     const statusMessage = formatTorrentStatus(torrent);
-    await ctx.reply(statusMessage, { parse_mode: 'Markdown'});
+    await ctx.reply(statusMessage, { parse_mode: 'Markdown', disable_web_page_preview: true });
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
@@ -185,7 +185,7 @@ bot.command('download', async (ctx) => {
   try {
     await ctx.reply('🚀 Processing link...');
     const result = await unrestrictLink(link);
-    await ctx.reply(`🎉 Download ready!\n\n${result.download}`);
+    await ctx.reply(`🎉 Download ready!\n\n${result.download}`, { disable_web_page_preview: true });
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
