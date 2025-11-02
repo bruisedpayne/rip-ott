@@ -123,6 +123,18 @@ function formatTorrentStatus(torrent: any): string {
   return message.trim();
 }
 
+async function handleTorrentPostProcessing(torrentId: string, ctx: any) {
+  await ctx.reply(`✅ Torrent added successfully!\n\nID: ${torrentId}\n`);
+  
+  await ctx.reply('Selecting all files to start download...');
+  await selectFiles(torrentId);
+  await ctx.reply('✅ All files selected! Download started.');
+  
+  const torrent = await getTorrentInfo(torrentId);
+  const statusMessage = formatTorrentStatus(torrent);
+  await ctx.reply(statusMessage, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } });
+}
+
 bot.command('torrent', async (ctx) => {
   if (!ctx.message?.text) return;
   
@@ -142,11 +154,7 @@ bot.command('torrent', async (ctx) => {
   try {
     await ctx.reply('Processing magnet link...');
     const result = await addMagnetLink(magnetLink);
-    await ctx.reply(`✅ Torrent added successfully!\n\nID: ${result.id}\n`);
-    
-    await ctx.reply('Selecting all files to start download...');
-    await selectFiles(result.id);
-    await ctx.reply('✅ All files selected! Download started.');
+    await handleTorrentPostProcessing(result.id, ctx);
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
@@ -210,11 +218,7 @@ bot.on('message:document', async (ctx) => {
     const fileBuffer = Buffer.from(response.data);
    
     const result = await addTorrentFile(fileBuffer);
-    await ctx.reply(`✅ Torrent added successfully!\n\nID: ${result.id}\n`);
-    
-    await ctx.reply('Selecting all files to start download...');
-    await selectFiles(result.id);
-    await ctx.reply('✅ All files selected! Download started.');
+    await handleTorrentPostProcessing(result.id, ctx);
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
