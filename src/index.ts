@@ -42,6 +42,50 @@ function isMagnetLink(text: string): boolean {
   return text.startsWith('magnet:');
 }
 
+async function getTorrentInfo(torrentId: string) {
+  try {
+    const response = await axios.get(`${RD_API_BASE}/torrents/info/${torrentId}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RD_API_TOKEN}`
+      }
+    });
+    return response.data
+  } catch (error: any) {
+    throw new Error(`Failed to get torrent info: ${error.response?.data?.error || error.message}`);
+  }
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(jsonDate: string): string {
+  return new Date(jsonDate).toUTCString();
+}
+
+
+function formatTorrentStatus(torrent: any): string {
+  let message = `*ID:* ${torrent.id}\n\n`;
+  message += `*Filename:* ${torrent.filename}\n\n`;
+  message += `*Size:* ${formatBytes(torrent.original_bytes)}\n\n`;
+  message += `*Status:* ${torrent.status.replaceAll("_", " ")}\n\n`;
+  message += `*Progress:* ${torrent.progress}%\n\n`;
+  message += `*Added:* ${formatDate(torrent.added)}\n\n`;
+  
+  if (torrent.links && torrent.links.length > 0) {
+    message += `*Links:*\n`;
+    torrent.links.forEach((link: string) => {
+      message += `• ${link}\n`;
+    });
+  }
+  
+  return message.trim();
+}
+
 bot.command('torrent', async (ctx) => {
   if (!ctx.message?.text) return;
   
@@ -62,6 +106,28 @@ bot.command('torrent', async (ctx) => {
     await ctx.reply('Processing magnet link...');
     const result = await addMagnetLink(magnetLink);
     await ctx.reply(`✅ Torrent added successfully!\n\nID: ${result.id}\n`);
+  } catch (error: any) {
+    await ctx.reply(`❌ Error: ${error.message}`);
+  }
+});
+
+bot.command('status', async (ctx) => {
+  if (!ctx.message?.text) return;
+  
+  // Extract everything after "/status " as the torrent ID
+  const torrentId = ctx.message.text.substring('/status '.length).trim();
+  
+  if (!torrentId) {
+    await ctx.reply('Usage: /status <torrent_id>');
+    return;
+  }
+
+  try {
+    await ctx.reply('Fetching torrent status...');
+    const torrent = await getTorrentInfo(torrentId);
+    console.log("api response torrent", torrent)
+    const statusMessage = formatTorrentStatus(torrent);
+    await ctx.reply(statusMessage, { parse_mode: 'Markdown'});
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
