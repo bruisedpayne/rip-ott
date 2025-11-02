@@ -64,7 +64,7 @@ function formatBytes(bytes: number): string {
 }
 
 function formatDate(jsonDate: string): string {
-  return new Date(jsonDate).toUTCString();
+  return new Date(jsonDate).toLocaleString();
 }
 
 
