@@ -48,6 +48,7 @@ export async function unrestrictLink(link: string) {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   });
+  console.log('link info', response.data)
   return response.data;
 }
 

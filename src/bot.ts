@@ -1,7 +1,7 @@
 import { Bot } from 'grammy';
 import axios from 'axios';
 import { addMagnetLink, addTorrentFile, unrestrictLink, getTorrentInfo, selectFiles } from './api.js';
-import { isMagnetLink, formatTorrentStatus } from './util.js';
+import { isMagnetLink, formatTorrentStatus, formatBytes } from './util.js';
 import { env } from './env.js';
 
 export function setupBotHandlers(bot: Bot) {
@@ -74,7 +74,8 @@ export function setupBotHandlers(bot: Bot) {
     try {
       await ctx.reply('🚀 Processing link...');
       const result = await unrestrictLink(link);
-      await ctx.reply(`🎉 Download ready!\n\n${result.download}`, { link_preview_options: { is_disabled: true} });
+      const message = `🎉 Download ready!\n\n*Size:* ${formatBytes(result.filesize)}\n\n[${result.filename}](${result.download})`;
+      await ctx.reply(message, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true} });
     } catch (error: any) {
       await ctx.reply(`❌ Error: ${error.message}`);
     }
