@@ -38,6 +38,23 @@ async function addTorrentFile(torrentBuffer: Buffer) {
   }
 }
 
+async function unrestrictLink(link: string) {
+  try {
+    const formData = new FormData();
+    formData.append('link', link);
+    
+    const response = await axios.post(`${RD_API_BASE}/unrestrict/link`, formData, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RD_API_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Failed to unrestrict link: ${error.response?.data?.error || error.message}`);
+  }
+}
+
 function isMagnetLink(text: string): boolean {
   return text.startsWith('magnet:');
 }
@@ -149,6 +166,26 @@ bot.command('status', async (ctx) => {
     const torrent = await getTorrentInfo(torrentId);
     const statusMessage = formatTorrentStatus(torrent);
     await ctx.reply(statusMessage, { parse_mode: 'Markdown'});
+  } catch (error: any) {
+    await ctx.reply(`❌ Error: ${error.message}`);
+  }
+});
+
+bot.command('download', async (ctx) => {
+  if (!ctx.message?.text) return;
+  
+  // Extract everything after "/download " as the link
+  const link = ctx.message.text.substring('/download '.length).trim();
+  
+  if (!link) {
+    await ctx.reply('Usage: /download <hoster_link>');
+    return;
+  }
+
+  try {
+    await ctx.reply('🚀 Processing link...');
+    const result = await unrestrictLink(link);
+    await ctx.reply(`🎉 Download ready!\n\n${result.download}`);
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
