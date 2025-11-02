@@ -49,9 +49,27 @@ async function getTorrentInfo(torrentId: string) {
         'Authorization': `Bearer ${process.env.RD_API_TOKEN}`
       }
     });
+     console.log("torrent info", response.data)
     return response.data
   } catch (error: any) {
     throw new Error(`Failed to get torrent info: ${error.response?.data?.error || error.message}`);
+  }
+}
+
+async function selectFiles(torrentId: string) {
+  try {
+    const formData = new FormData();
+    formData.append('files', 'all');
+    
+    await axios.post(`${RD_API_BASE}/torrents/selectFiles/${torrentId}`, formData, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RD_API_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+  } catch (error: any) {
+    console.log(error.response.data)
+    throw new Error(`Failed to select files: ${error.response?.data?.error || error.message}`);
   }
 }
 
@@ -106,6 +124,10 @@ bot.command('torrent', async (ctx) => {
     await ctx.reply('Processing magnet link...');
     const result = await addMagnetLink(magnetLink);
     await ctx.reply(`✅ Torrent added successfully!\n\nID: ${result.id}\n`);
+    
+    await ctx.reply('Selecting all files to start download...');
+    await selectFiles(result.id);
+    await ctx.reply('✅ All files selected! Download started.');
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
@@ -125,7 +147,6 @@ bot.command('status', async (ctx) => {
   try {
     await ctx.reply('Fetching torrent status...');
     const torrent = await getTorrentInfo(torrentId);
-    console.log("api response torrent", torrent)
     const statusMessage = formatTorrentStatus(torrent);
     await ctx.reply(statusMessage, { parse_mode: 'Markdown'});
   } catch (error: any) {
@@ -151,6 +172,10 @@ bot.on('message:document', async (ctx) => {
    
     const result = await addTorrentFile(fileBuffer);
     await ctx.reply(`✅ Torrent added successfully!\n\nID: ${result.id}\n`);
+    
+    await ctx.reply('Selecting all files to start download...');
+    await selectFiles(result.id);
+    await ctx.reply('✅ All files selected! Download started.');
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
