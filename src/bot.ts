@@ -84,7 +84,7 @@ export function setupBotHandlers(bot: Bot) {
     try {
       await ctx.reply('🚀 Processing link...');
       const result = await unrestrictLink(link);
-      const message = `🎉 Download ready!\n\n*Size:* ${formatBytes(result.filesize)}\n\n[${result.filename}](${result.download})`;
+      const message = `🎉 Download ready!\n\n📁 \`${result.filename}\`\n\n*Size:* ${formatBytes(result.filesize)}\n\n[⬇️ Download](${result.download})`;
       await ctx.reply(message, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true} });
     } catch (error: any) {
       await ctx.reply(`❌ Error: ${error.message}`);
