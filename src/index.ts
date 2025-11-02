@@ -1,11 +1,8 @@
-import { config } from 'dotenv';
 import { Bot } from 'grammy';
 import { setupBotHandlers } from './bot.js';
+import { env } from './env.js';
 
-config();
-
-const bot = new Bot(process.env.BOT_TOKEN!);
-
+const bot = new Bot(env.BOT_TOKEN);
 setupBotHandlers(bot);
 
 bot.start();

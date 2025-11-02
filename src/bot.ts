@@ -2,6 +2,7 @@ import { Bot } from 'grammy';
 import axios from 'axios';
 import { addMagnetLink, addTorrentFile, unrestrictLink, getTorrentInfo, selectFiles } from './api.js';
 import { isMagnetLink, formatTorrentStatus } from './util.js';
+import { env } from './env.js';
 
 export function setupBotHandlers(bot: Bot) {
   async function handleTorrentPostProcessing(torrentId: string, ctx: any) {
@@ -90,7 +91,7 @@ export function setupBotHandlers(bot: Bot) {
     try {
       await ctx.reply('Processing torrent file...');
       const file = await ctx.api.getFile(document.file_id);
-      const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
+      const fileUrl = `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${file.file_path}`;
      
       const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
       const fileBuffer = Buffer.from(response.data);

@@ -8,14 +8,16 @@
   },
   "type": "module",
   "dependencies": {
-    "@types/form-data": "^2.2.1",
+    "@t3-oss/env-core": "^0.13.8",
     "axios": "^1.13.1",
     "dotenv": "^16.4.7",
-    "grammy": "^1.36.2"
+    "grammy": "^1.36.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.9.2",
+    "@types/form-data": "^2.2.1",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3"
   }
