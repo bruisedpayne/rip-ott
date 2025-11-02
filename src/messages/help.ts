@@ -1,4 +1,4 @@
-import { GITHUB_URL } from "../config";
+import { GITHUB_URL } from "../config.js";
 
 export const helpMessage = `📖 *RIP OTT Help*
 
