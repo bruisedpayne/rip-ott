@@ -41,8 +41,9 @@ function isMagnetLink(text) {
 bot.command('torrent', async (ctx) => {
     if (!ctx.message?.text)
         return;
-    const args = ctx.message.text.split(' ').slice(1);
-    if (args.length === 0) {
+    // Extract everything after "/torrent " as the magnet link
+    const magnetLink = ctx.message.text.substring('/torrent '.length).trim();
+    if (!magnetLink) {
         await ctx.reply('Usage: /torrent <magnet_link>');
         return;
     }
