@@ -9,11 +9,13 @@ const RD_API_BASE = 'https://api.real-debrid.com/rest/1.0';
 
 async function addMagnetLink(magnet: string) {
   try {
-    const response = await axios.post(`${RD_API_BASE}/torrents/addMagnet`, {
-      magnet,
-    }, {
+    const formData = new FormData();
+    formData.append('magnet', magnet);
+    
+    const response = await axios.post(`${RD_API_BASE}/torrents/addMagnet`, formData, {
       headers: {
-        'Authorization': `Bearer ${process.env.RD_API_TOKEN}`
+        'Authorization': `Bearer ${process.env.RD_API_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
     return response.data;
@@ -165,7 +167,7 @@ bot.command('status', async (ctx) => {
     await ctx.reply('Fetching torrent status...');
     const torrent = await getTorrentInfo(torrentId);
     const statusMessage = formatTorrentStatus(torrent);
-    await ctx.reply(statusMessage, { parse_mode: 'Markdown', disable_web_page_preview: true });
+    await ctx.reply(statusMessage, { parse_mode: 'Markdown', link_preview_options: { is_disabled: true } });
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
@@ -185,7 +187,7 @@ bot.command('download', async (ctx) => {
   try {
     await ctx.reply('🚀 Processing link...');
     const result = await unrestrictLink(link);
-    await ctx.reply(`🎉 Download ready!\n\n${result.download}`, { disable_web_page_preview: true });
+    await ctx.reply(`🎉 Download ready!\n\n${result.download}`, { link_preview_options: { is_disabled: true} });
   } catch (error: any) {
     await ctx.reply(`❌ Error: ${error.message}`);
   }
